@@ -28,6 +28,15 @@ public class Result<T> {
         return new Result<>(code,null,message);
     }
 
+    public static <T> Result<T> unAuthorized(String message){
+        return new Result<>(401,null,message);
+    }
+
+    public static <T> Result<T>accessDenied(String message){
+        return new Result<>(403,null,message);
+
+    }
+
     public String asJsonString(){
         return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls);
     }

@@ -1,1 +1,11 @@
-spring.application.name=my-project-backend
+spring:
+  security:
+    jwt:
+      key: 123456
+      expire: 7
+  data:
+    redis:
+      host: 127.0.0.1
+      database: 0
+      connect-timeout: 10000
+      port: 6379
