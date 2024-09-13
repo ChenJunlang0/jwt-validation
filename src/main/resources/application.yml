@@ -9,3 +9,8 @@ spring:
       database: 0
       connect-timeout: 10000
       port: 6379
+  datasource:
+    username: root
+    password: cnd20030601.
+    url: jdbc:mysql://localhost:3306/jwt
+    driver-class-name: com.mysql.cj.jdbc.Driver

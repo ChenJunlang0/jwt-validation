@@ -2,12 +2,17 @@ package com.example.myprojectbackend.config;
 
 import com.auth0.jwt.JWT;
 import com.example.myprojectbackend.entity.Result;
+import com.example.myprojectbackend.entity.dto.Account;
 import com.example.myprojectbackend.entity.vo.request.AuthorizeVo;
 import com.example.myprojectbackend.filter.JwtAuthorize;
+import com.example.myprojectbackend.service.AccountService;
+import com.example.myprojectbackend.service.impl.AccountServiceImpl;
 import com.example.myprojectbackend.utils.JwtUtils;
+import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +37,9 @@ public class SecurityConfiguration {
 
     @Autowired
     JwtAuthorize jwtAuthorize;
+
+    @Resource
+    AccountServiceImpl accountService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -88,12 +96,12 @@ public class SecurityConfiguration {
                                         Authentication authentication) throws IOException, ServletException{
         response.setContentType("application/json;charset=UTF-8");
         User user = (User)authentication.getPrincipal();
-        String token=jwtUtils.createJwt(user,1,"zhangsan");
+        Account account = accountService.findAccountByNameOrEmail(user.getUsername());
+        String token=jwtUtils.createJwt(user,account.getId(),account.getUsername());
         AuthorizeVo authorizeVo = new AuthorizeVo();
+        BeanUtils.copyProperties(account,authorizeVo);
         authorizeVo.setExpire(JWT.decode(token).getExpiresAt());
         authorizeVo.setToken(token);
-        authorizeVo.setRole("");
-        authorizeVo.setUsername(((User) authentication.getPrincipal()).getUsername());
         response.getWriter().write(Result.sucess(authorizeVo).asJsonString());
     }
 
