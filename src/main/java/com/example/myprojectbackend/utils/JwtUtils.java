@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -32,6 +33,20 @@ public class JwtUtils {
     @Autowired
     StringRedisTemplate redisTemplate;
 
+    public boolean checkToken(String headerToken){
+        String token = convertToken(headerToken);
+        if (token==null)
+            return false;
+        Algorithm algorithm=Algorithm.HMAC256(key);
+        JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+        try {
+            DecodedJWT decodedJWT = jwtVerifier.verify(token);
+            return new Date().before(decodedJWT.getExpiresAt());
+        }catch (JWTVerificationException e){
+            return false;
+        }
+    }
+
     public boolean invalidateJwt(String headerToken){
         String token = convertToken(headerToken);
         if (token==null)
@@ -51,6 +66,7 @@ public class JwtUtils {
             return false;
         Date now=new Date();
         Long expire=Math.max(time.getTime()-now.getTime(),0);
+        //将令牌加入redis黑名单
         redisTemplate.opsForValue().set(Const.JWT_BLACK_LIST+uuid,uuid,expire, TimeUnit.MILLISECONDS);
         return true;
 

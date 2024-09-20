@@ -1,8 +1,20 @@
 spring:
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: chenjunlang
+    password: cnd20030601.
+    virtual-host: /test
+  mail:
+    username: 18206176932@163.com
+    password: MMTOFKWFAKUECFDT
+    host: smtp.163.com
   security:
     jwt:
       key: 123456
       expire: 7
+    filter:
+      order: -100
   data:
     redis:
       host: 127.0.0.1

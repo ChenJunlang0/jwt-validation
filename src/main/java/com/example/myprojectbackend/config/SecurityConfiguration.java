@@ -5,7 +5,6 @@ import com.example.myprojectbackend.entity.Result;
 import com.example.myprojectbackend.entity.dto.Account;
 import com.example.myprojectbackend.entity.vo.request.AuthorizeVo;
 import com.example.myprojectbackend.filter.JwtAuthorize;
-import com.example.myprojectbackend.service.AccountService;
 import com.example.myprojectbackend.service.impl.AccountServiceImpl;
 import com.example.myprojectbackend.utils.JwtUtils;
 import jakarta.annotation.Resource;
@@ -95,6 +94,7 @@ public class SecurityConfiguration {
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException{
         response.setContentType("application/json;charset=UTF-8");
+        //认证成功颁发令牌
         User user = (User)authentication.getPrincipal();
         Account account = accountService.findAccountByNameOrEmail(user.getUsername());
         String token=jwtUtils.createJwt(user,account.getId(),account.getUsername());
@@ -102,7 +102,7 @@ public class SecurityConfiguration {
         BeanUtils.copyProperties(account,authorizeVo);
         authorizeVo.setExpire(JWT.decode(token).getExpiresAt());
         authorizeVo.setToken(token);
-        response.getWriter().write(Result.sucess(authorizeVo).asJsonString());
+        response.getWriter().write(Result.success(authorizeVo).asJsonString());
     }
 
     void onLogoutSuccess(HttpServletRequest request,
@@ -112,7 +112,7 @@ public class SecurityConfiguration {
         PrintWriter writer = response.getWriter();
         String headerToken = request.getHeader("Authorization");
         if (jwtUtils.invalidateJwt(headerToken))
-            writer.write(Result.sucess("登出成功").asJsonString());
+            writer.write(Result.success("登出成功").asJsonString());
         else
             writer.write(Result.failure(400,"登出失败").asJsonString());
     }

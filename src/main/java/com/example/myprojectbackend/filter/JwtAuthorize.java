@@ -27,10 +27,10 @@ public class JwtAuthorize extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String headerToken = request.getHeader("Authorization");
         DecodedJWT decodedJWT = jwtUtils.resolveJwt(headerToken);
-        //对于有效的token进行user信息存储，无效的token直接放行
+        //对于有效的token进行user信息存储
         if (decodedJWT!=null){
             UserDetails user=jwtUtils.toUser(decodedJWT);
-            //创建用户凭证，第二个为null是因为jwt已经通过验证
+            //创建用户凭证
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             //将当前http请求的相关信息存储在user中
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -16,12 +16,14 @@ public class Result<T> {
 
     String message;
 
-    public static <T> Result<T> sucess(T data){
+    public static <T> Result<T> success(T data){
         return new Result<>(200,data,"sucess");
     }
 
-    public static <T> Result<T> sucess(){
-        return sucess(null);
+    public static <T> Result<T> success(T data,String message){return new Result<>(200,data,message);};
+
+    public static <T> Result<T> success(){
+        return success(null);
     }
 
     public static <T> Result<T> failure(int code,String message){
